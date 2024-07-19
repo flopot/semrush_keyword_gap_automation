@@ -20,7 +20,10 @@ def input_domain_name():
 def input_categories():
     global use_first_directory, categories
     category_input = st.text_input("Enter categories:", placeholder="Blog: example.com/blog/, Product: example.com/product")
-    if st.button("Validate Categories"):
+    validate_categories = st.button("Validate Categories")
+    skip_categories = st.button("Skip and use directories")
+
+    if validate_categories:
         categories = {}
         input_text = category_input.strip()
         category_pairs = input_text.split(',')
@@ -34,8 +37,8 @@ def input_categories():
         use_first_directory = False
         st.success(f"Categories have been validated: {categories}")
         input_keyword_patterns()
-
-    if st.button("Skip and use directories"):
+    
+    if skip_categories:
         use_first_directory = True
         st.success("Using first directory for categorization.")
         input_keyword_patterns()
@@ -43,7 +46,10 @@ def input_categories():
 def input_keyword_patterns():
     global patterns, skip_keyword_patterns
     patterns_input = st.text_input("Enter keyword patterns:", placeholder="Brand: amazon, Non-brand: .*")
-    if st.button("Validate Keyword Patterns"):
+    validate_patterns = st.button("Validate Keyword Patterns")
+    skip_patterns = st.button("Skip Keyword Patterns")
+
+    if validate_patterns:
         patterns = []
         input_text = patterns_input.strip()
         pattern_pairs = input_text.split(',')
@@ -58,7 +64,7 @@ def input_keyword_patterns():
         st.success(f"Keyword patterns have been validated: {patterns}")
         run_script()
 
-    if st.button("Skip Keyword Patterns"):
+    if skip_patterns:
         skip_keyword_patterns = True
         st.success("Skipping keyword patterns categorization.")
         run_script()
@@ -203,5 +209,5 @@ def run_script():
         st.download_button(label="Download summary_by_category.csv", data=summary_3_filename, file_name=summary_3_filename, mime='text/csv')
 
 # Run the input prompt for the domain name
-st.title("Semrush Keyword GAp Analysis")
+st.title("Domain Analysis Tool")
 input_domain_name()
