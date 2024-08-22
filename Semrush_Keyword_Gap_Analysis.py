@@ -104,8 +104,8 @@ def main():
                 csv_merged['Category'] = csv_merged[pages_column].apply(categorize)
 
                 # Bin the values for status
-                bins = [0, 3, 10, 30, float('inf')]
-                labels = ['1-3', '4-10', '11-30', '31+']
+                bins = [-float('inf'), 0, 3, 10, 30, float('inf')]
+                labels = ['missing', '1-3', '4-10', '11-30', '31+']
                 csv_merged[domain_name] = pd.to_numeric(csv_merged[domain_name], errors='coerce')
                 csv_merged['Status'] = pd.cut(csv_merged[domain_name], bins=bins, labels=labels, right=False)
 
