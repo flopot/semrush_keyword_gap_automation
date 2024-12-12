@@ -147,8 +147,9 @@ def main():
                     st.write("Available columns in csv_merged:", csv_merged.columns.tolist())
                     return
 
-                # Sort by search volume
-                csv_merged = csv_merged.sort_values(by='Search Volume', ascending=False)
+                # Sort by volume
+                csv_merged = csv_merged.sort_values(by='Volume', ascending=False)
+
 
                 # Save the processed CSV
                 output_filename = 'overall.csv'
