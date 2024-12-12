@@ -2,47 +2,6 @@ import streamlit as st
 import pandas as pd
 import re
 
-
-
-import streamlit as st
-
-# Custom CSS
-custom_css = """
-<style>
-/* Set background color */
-.stApp {
-    background-color: #f5f5f5;
-}
-/* Customize font */
-body, .stApp {
-    font-family: 'Helvetica Neue', sans-serif;
-}
-/* Style headers */
-h1, h2, h3, h4, h5, h6 {
-    color: #333333;
-}
-/* Style buttons */
-.stButton button {
-    background-color: #0073e6;
-    color: white;
-    border-radius: 5px;
-}
-/* Style download buttons */
-.stDownloadButton button {
-    background-color: #0073e6;
-    color: white;
-    border-radius: 5px;
-}
-</style>
-"""
-
-# Inject CSS with markdown
-st.markdown(custom_css, unsafe_allow_html=True)
-
-
-
-
-
 def main():
     st.title("Semrush Keyword Gap Automation")
 
