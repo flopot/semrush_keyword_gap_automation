@@ -127,10 +127,10 @@ def main():
                     'Category',
                     'Keyword Patterns',
                     'Status',
-                    'Search Volume',
+                    'Volume',
                     'Keyword Difficulty',
                     'CPC',
-                    'Keyword Intents',
+                    'Intents',
                     domain_name,
                     pages_column
                 ]
@@ -166,14 +166,14 @@ def main():
 
                 # Generate and download pos4to10.csv
                 pos4to10 = csv_merged[(csv_merged['Status'] == '4-10') & (csv_merged['Category'] != 'Other') & (csv_merged['Keyword Patterns'] != '')]
-                pos4to10 = pos4to10.sort_values(by='Search Volume', ascending=False)
+                pos4to10 = pos4to10.sort_values(by='Volume', ascending=False)
                 pos4to10_filename = 'pos4to10.csv'
                 pos4to10.to_csv(pos4to10_filename, index=False)
                 st.download_button(label="Download pos4to10.csv", data=pos4to10.to_csv(index=False), file_name=pos4to10_filename, mime='text/csv')
 
                 # Generate and download pos11to30.csv
                 pos11to30 = csv_merged[(csv_merged['Status'] == '11-30') & (csv_merged['Category'] != 'Other') & (csv_merged['Keyword Patterns'] != '')]
-                pos11to30 = pos11to30.sort_values(by='Search Volume', ascending=False)
+                pos11to30 = pos11to30.sort_values(by='Volume', ascending=False)
                 pos11to30_filename = 'pos11to30.csv'
                 pos11to30.to_csv(pos11to30_filename, index=False)
                 st.download_button(label="Download pos11to30.csv", data=pos11to30.to_csv(index=False), file_name=pos11to30_filename, mime='text/csv')
@@ -181,7 +181,7 @@ def main():
                 # Generate and download summary_by_status_category_keyword_pattern.csv
                 summary_1 = csv_merged.groupby(['Status', 'Category', 'Keyword Patterns']).agg(
                     keyword_count=('Keyword', 'count'),
-                    search_volume_sum=('Search Volume', 'sum')
+                    search_volume_sum=('Volume', 'sum')
                 ).reset_index()
 
                 summary_1 = summary_1[summary_1['keyword_count'] > 0]
@@ -195,7 +195,7 @@ def main():
                 # Generate and download summary_by_status.csv
                 summary_2 = csv_merged.groupby('Status').agg(
                     keyword_count=('Keyword', 'count'),
-                    search_volume_sum=('Search Volume', 'sum')
+                    search_volume_sum=('Volume', 'sum')
                 ).reset_index()
 
                 summary_2 = summary_2[summary_2['keyword_count'] > 0]
@@ -209,7 +209,7 @@ def main():
                 # Generate and download summary_by_category.csv
                 summary_3 = csv_merged.groupby('Category').agg(
                     keyword_count=('Keyword', 'count'),
-                    search_volume_sum=('Search Volume', 'sum')
+                    search_volume_sum=('Volume', 'sum')
                 ).reset_index()
 
                 summary_3 = summary_3[summary_3['keyword_count'] > 0]
