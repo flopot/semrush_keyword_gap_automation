@@ -134,10 +134,18 @@ def main():
                     domain_name,
                     pages_column
                 ]
-
-                remaining_columns = sorted([col for col in csv_merged.columns if col not in columns_order])
-                final_columns_order = columns_order + remaining_columns
-                csv_merged = csv_merged[final_columns_order]
+                
+                # Adjust column ordering to handle missing columns gracefully
+                final_columns_order = [col for col in columns_order if col in csv_merged.columns] + \
+                                      [col for col in csv_merged.columns if col not in columns_order]
+                
+                # Apply the reordered columns
+                try:
+                    csv_merged = csv_merged[final_columns_order]
+                except KeyError as e:
+                    st.error(f"Column ordering failed: {e}")
+                    st.write("Available columns in csv_merged:", csv_merged.columns.tolist())
+                    return
 
                 # Sort by search volume
                 csv_merged = csv_merged.sort_values(by='Search Volume', ascending=False)
