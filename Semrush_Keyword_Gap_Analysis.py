@@ -15,10 +15,10 @@ def extract_domain(url):
         return None
 
 def main():
-    st.title("Semrush Keyword Gap Automation")
+    st.title("Semrush Keyword Gap Automation v2.0")
     
-    # Step 1: Upload CSV files
-    st.header("Upload CSV Files")
+    # Step 1: Compile all domains' data
+    st.header("Step 1: Upload and Compile All Domains' Data")
     uploaded_files = st.file_uploader("Choose CSV files", accept_multiple_files=True, type=["csv"])
     
     if uploaded_files:
@@ -31,11 +31,11 @@ def main():
                 st.error(f"Error reading file {uploaded_file.name}: {e}")
                 return
         
-        # Step 2: Merge and Remove Duplicates
+        # Merge and Remove Duplicates
         csv_merged = pd.concat(csv_list, ignore_index=True)
         csv_merged.drop_duplicates(inplace=True)
         
-        # Step 3: Keep Only Required Columns
+        # Keep Only Required Columns
         required_columns = [
             "Keyword", "Keyword Intents", "Search Volume", "Keyword Difficulty",
             "CPC", "Position", "URL", "Position Type"
@@ -49,29 +49,75 @@ def main():
         
         csv_merged = csv_merged[required_columns]
         
-        # Step 4: Extract Domain and Insert it between CPC and Position
+        # Extract Domain and Insert it between CPC and Position
         csv_merged.insert(5, "Domain", csv_merged["URL"].apply(extract_domain))
         
-        # Step 5: Remove Duplicates Based on Domain and Keyword (Keep Best Position)
+        # Remove Duplicates Based on Domain and Keyword (Keep Best Position)
         csv_merged = csv_merged.sort_values(by=["Keyword", "Domain", "Position"], ascending=[True, True, True])
         csv_merged = csv_merged.drop_duplicates(subset=["Keyword", "Domain"], keep="first")
         
         # Save the processed CSV
-        output_filename = 'processed_data.csv'
+        output_filename = 'compiled_data.csv'
         csv_merged.to_csv(output_filename, index=False)
-        st.success(f"Processed data saved to {output_filename}")
+        st.success(f"Compiled data saved to {output_filename}")
         
-        # Provide download button for the final CSV
-        st.download_button(
-            label="Download Processed CSV",
+        # Provide download button for compiled data
+        if st.download_button(
+            label="Download Compiled Data",
             data=csv_merged.to_csv(index=False),
             file_name=output_filename,
             mime="text/csv"
-        )
+        ):
+            st.session_state.next_step = True
+    
+    # Step 2: Keyword Gap Analysis
+    if st.session_state.get("next_step", False):
+        st.header("Step 2: Create Keyword Gap Analysis")
+        domain_name = st.text_input("Enter Your Domain Name")
         
-        # Display Preview
-        st.write("Preview of Processed Data:")
-        st.write(csv_merged.head())
+        if domain_name:
+            if domain_name not in csv_merged["Domain"].unique():
+                st.error("The provided domain does not exist in the compiled data.")
+                return
+            
+            # Keep Required Columns & Remove Keyword Duplicates
+            gap_data = csv_merged[["Keyword", "Keyword Intents", "Search Volume", "Keyword Difficulty", "CPC"]]
+            gap_data.drop_duplicates(subset=["Keyword"], keep="first", inplace=True)
+            
+            # Create Position and URL Columns for Each Domain
+            domain_pivot = csv_merged.pivot_table(index="Keyword", columns="Domain", values=["Position", "URL"], aggfunc="first")
+            domain_pivot.columns = [f"{domain} {col}" for col, domain in domain_pivot.columns]
+            
+            # Merge with the main dataset
+            gap_data = gap_data.merge(domain_pivot, on="Keyword", how="left")
+            
+            # Add "Status" Column
+            def determine_status(row):
+                if pd.isna(row.get(f"{domain_name} Position")):
+                    return "Missing"
+                best_rank = min([row[col] for col in domain_pivot.columns if "Position" in col and not pd.isna(row[col])])
+                if row[f"{domain_name} Position"] == best_rank:
+                    return "Strong"
+                return "Weak"
+                
+            gap_data["Status"] = gap_data.apply(determine_status, axis=1)
+            
+            # Count Domains in Top 30
+            position_cols = [col for col in domain_pivot.columns if "Position" in col]
+            gap_data["Domains in top 30"] = gap_data[position_cols].apply(lambda x: sum(x <= 30), axis=1)
+            
+            # Save Keyword Gap Data
+            gap_output_filename = "keyword_gap_analysis.csv"
+            gap_data.to_csv(gap_output_filename, index=False)
+            st.success(f"Keyword gap analysis saved to {gap_output_filename}")
+            
+            # Provide download button for the keyword gap file
+            st.download_button(
+                label="Download Keyword Gap Analysis",
+                data=gap_data.to_csv(index=False),
+                file_name=gap_output_filename,
+                mime="text/csv"
+            )
 
 if __name__ == "__main__":
     main()
