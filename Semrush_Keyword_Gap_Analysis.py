@@ -22,7 +22,7 @@ def main():
 
     # Step 1: Compile all domains' data
     st.header("1. Upload and Compile All Domains' Data")
-    uploaded_files = st.file_uploader("Choose CSV files", accept_multiple_files=True, type=["csv"])
+    uploaded_files = st.file_uploader("Upload your CSV files: they should be exports from Semrush > Organic Research > Positions", accept_multiple_files=True, type=["csv"])
 
     if uploaded_files:
         csv_list = []
