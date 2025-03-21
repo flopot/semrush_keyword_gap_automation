@@ -67,7 +67,7 @@ def main():
             if st.button("Proceed to Keyword Gap Analysis"):
                 st.session_state.compiled_data = csv_merged
                 st.session_state.step = 2
-                st.experimental_rerun()
+                # Do not use st.experimental_rerun(), continue the flow naturally
 
     # Step 2: Keyword Gap Analysis
     elif st.session_state.step == 2:
