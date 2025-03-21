@@ -72,7 +72,7 @@ def main():
     # Step 2: Keyword Gap Analysis
     if st.session_state.get("next_step", False):
         st.header("2. Create Keyword Gap Analysis")
-        domain_name = st.text_input("Enter Your Domain Name", "americanexpediting.com")
+        domain_name = st.text_input("Enter Your Domain Name", "domain.com")
 
         csv_merged = st.session_state.get("compiled_data")
         if csv_merged is None:
