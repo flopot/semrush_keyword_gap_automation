@@ -2,17 +2,18 @@ import streamlit as st
 import pandas as pd
 import re
 from urllib.parse import urlparse
+import tldextract
 
 def extract_domain(url):
-    """Extracts the main domain from a URL (e.g., 'https://www.example.com/page' -> 'example.com')."""
+    """Extracts the main domain from a URL using tldextract (handles multi-part TLDs)."""
     try:
-        parsed_url = urlparse(url)
-        domain_parts = parsed_url.netloc.split('.')
-        if len(domain_parts) > 2:
-            return '.'.join(domain_parts[-2:])  # Keeps only the main domain and TLD
-        return parsed_url.netloc
+        extracted = tldextract.extract(url)
+        if extracted.domain and extracted.suffix:
+            return f"{extracted.domain}.{extracted.suffix}"
+        return None
     except:
         return None
+
 
 def main():
     st.title("Semrush Keyword Gap Automation")
